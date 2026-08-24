@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JUJUTSU KAISEN — CURSED DOMAIN (First Person)</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/screens.css">
+</head>
+<body>
+
+<!-- ============ WORLD ============ -->
+<canvas id="game"></canvas>
+
+<!-- Click-to-lock prompt shown when pointer lock drops -->
+<div id="lockPrompt" class="lock-prompt hidden">
+  <div class="lock-inner">
+    <div class="lock-icon">◎</div>
+    <div class="lock-text">CLICK TO RESUME</div>
+    <div class="lock-sub">mouse look · ESC to pause</div>
+  </div>
+</div>
+
+<!-- ============ LOADING ============ -->
+<section id="loading" class="screen active">
+  <div class="load-wrap">
+    <div class="load-kanji">呪術廻戦</div>
+    <h1 class="load-title">CURSED DOMAIN</h1>
+    <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
+    <div class="load-status" id="loadStatus">summoning…</div>
+  </div>
+</section>
+
+<!-- ============ TITLE ============ -->
+<section id="title" class="screen">
+  <div class="title-bg"></div>
+  <nav class="title-nav">
+    <a class="back-btn" href="../index.html">‹ 2D / 3D SELECT</a>
+    <a class="ghost-btn" href="../2d/jjk-game.html">SWITCH TO 2D · TOP-DOWN ›</a>
+  </nav>
+  <div class="title-inner">
+    <div class="title-kanji">呪術廻戦</div>
+    <h1 class="title-main">CURSED<span>DOMAIN</span></h1>
+    <p class="title-tag">First-person cursed combat · 23 sorcerers · 6 arenas</p>
+
+    <div class="mode-grid">
+      <button class="mode-card" data-mode="story">
+        <span class="mode-kanji">物語</span>
+        <span class="mode-name">STORY</span>
+        <span class="mode-desc">Start as Yuji. Unlock the roster wave by wave as the arenas rotate.</span>
+      </button>
+      <button class="mode-card" data-mode="endless">
+        <span class="mode-kanji">無限</span>
+        <span class="mode-name">ENDLESS</span>
+        <span class="mode-desc">Everyone unlocked. Pick your arena and see how deep you get.</span>
+      </button>
+      <button class="mode-card" data-mode="battle">
+        <span class="mode-kanji">決闘</span>
+        <span class="mode-name">BATTLE</span>
+        <span class="mode-desc">1v1 up to 1v4 against AI sorcerers using real kits.</span>
+      </button>
+    </div>
+
+    <div class="title-foot">
+      <button class="ghost-btn" id="btnSettings">SETTINGS</button>
+      <button class="ghost-btn" id="btnControls">CONTROLS</button>
+      <span class="foot-note">Runs offline · no build step · <span id="assetNote"></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHARACTER SELECT ============ -->
+<section id="charSelect" class="screen">
+  <header class="sel-head">
+    <button class="back-btn" data-back="title">‹ BACK</button>
+    <h2>SELECT SORCERER</h2>
+    <div class="sel-mode" id="selMode"></div>
+  </header>
+
+  <div class="sel-body">
+    <div class="char-grid" id="charGrid"></div>
+
+    <aside class="char-info" id="charInfo">
+      <div class="ci-portrait"><img id="ciImg" alt=""></div>
+      <div class="ci-head">
+        <h3 id="ciName">—</h3>
+        <div class="ci-kanji" id="ciKanji"></div>
+        <div class="ci-role" id="ciRole"></div>
+      </div>
+      <p class="ci-blurb" id="ciBlurb"></p>
+
+      <div class="ci-stats">
+        <div class="stat"><label>HEALTH</label><div class="stat-bar"><i id="stHp"></i></div><span id="stHpV"></span></div>
+        <div class="stat"><label>SPEED</label><div class="stat-bar"><i id="stSp"></i></div><span id="stSpV"></span></div>
+        <div class="stat"><label id="stCritLabel">BLACK FLASH</label><div class="stat-bar"><i id="stCrit"></i></div><span id="stCritV"></span></div>
+      </div>
+
+      <div class="ci-abilities" id="ciAbilities"></div>
+      <div class="ci-passive"><label>PASSIVE</label><p id="ciPassive"></p></div>
+
+      <button class="primary-btn" id="btnDeploy" disabled>DEPLOY</button>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ ARENA SELECT ============ -->
+<section id="levelSelect" class="screen">
+  <header class="sel-head">
+    <button class="back-btn" data-back="charSelect">‹ BACK</button>
+    <h2>SELECT ARENA</h2>
+    <div class="sel-mode">ENDLESS</div>
+  </header>
+  <div class="level-grid" id="levelGrid"></div>
+  <div class="level-foot">
+    <label class="toggle"><input type="checkbox" id="rotateArenas" checked> <span>Rotate arenas every 5 waves</span></label>
+    <button class="primary-btn" id="btnLevelStart" disabled>BEGIN</button>
+  </div>
+</section>
+
+<!-- ============ BATTLE SETUP ============ -->
+<section id="battleSetup" class="screen">
+  <header class="sel-head">
+    <button class="back-btn" data-back="charSelect">‹ BACK</button>
+    <h2>BATTLE SETUP</h2>
+    <div class="sel-mode">DUEL</div>
+  </header>
+
+  <div class="battle-body">
+    <div class="battle-left">
+      <div class="bl-label">OPPONENTS</div>
+      <div class="count-row" id="countRow">
+        <button data-count="1" class="count-btn active">1</button>
+        <button data-count="2" class="count-btn">2</button>
+        <button data-count="3" class="count-btn">3</button>
+        <button data-count="4" class="count-btn">4</button>
+      </div>
+      <div class="slot-row" id="slotRow"></div>
+      <div class="battle-actions">
+        <button class="ghost-btn" id="btnRandomise">RANDOMISE</button>
+        <button class="ghost-btn" id="btnClearSlots">CLEAR</button>
+      </div>
+      <div class="bl-label">DIFFICULTY</div>
+      <div class="count-row" id="diffRow">
+        <button data-diff="0.75" class="count-btn">GRADE 4</button>
+        <button data-diff="1" class="count-btn active">GRADE 1</button>
+        <button data-diff="1.4" class="count-btn">SPECIAL</button>
+      </div>
+      <button class="primary-btn" id="btnBattleStart">FIGHT</button>
+    </div>
+    <div class="battle-right">
+      <div class="bl-label">PICK OPPONENT</div>
+      <div class="char-grid small" id="battleGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAUSE ============ -->
+<section id="pause" class="overlay">
+  <div class="ov-card">
+    <div class="ov-kanji">休</div>
+    <h2>PAUSED</h2>
+    <div class="ov-stats" id="pauseStats"></div>
+    <div class="ov-actions">
+      <button class="primary-btn" id="btnResume">RESUME</button>
+      <button class="ghost-btn" id="btnPauseControls">CONTROLS</button>
+      <button class="ghost-btn danger" id="btnQuit">ABANDON RUN</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GAME OVER ============ -->
+<section id="gameOver" class="overlay">
+  <div class="ov-card">
+    <div class="ov-kanji" id="goKanji">終</div>
+    <h2 id="goTitle">YOU DIED</h2>
+    <div class="ov-stats" id="goStats"></div>
+    <div class="ov-actions">
+      <button class="primary-btn" id="btnRetry">RETRY</button>
+      <button class="ghost-btn" id="btnMenu">MAIN MENU</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTROLS ============ -->
+<section id="controls" class="overlay">
+  <div class="ov-card wide">
+    <div class="ov-kanji">操</div>
+    <h2>CONTROLS</h2>
+    <p class="ov-note">Left-hand layout — your right hand never leaves the mouse.</p>
+    <div class="key-grid">
+      <div class="key-row"><kbd>W A S D</kbd><span>Move</span></div>
+      <div class="key-row"><kbd>MOUSE</kbd><span>Look</span></div>
+      <div class="key-row"><kbd>LMB</kbd><span>Cursed strike — rolls Black Flash</span></div>
+      <div class="key-row"><kbd>Q</kbd><span>Ability 1</span></div>
+      <div class="key-row"><kbd>E</kbd><span>Ability 2</span></div>
+      <div class="key-row"><kbd>C</kbd><span>Ability 3</span></div>
+      <div class="key-row"><kbd>X</kbd><span>Domain Expansion</span></div>
+      <div class="key-row"><kbd>F</kbd><span>Reverse Cursed Technique (heal)</span></div>
+      <div class="key-row"><kbd>RMB</kbd> <span>Passive — hold for Gojo's Infinity (also <b>V</b>)</span></div>
+      <div class="key-row"><kbd>Q / E again</kbd><span>Detonate your Blue / Red early</span></div>
+      <div class="key-row"><kbd>SPACE</kbd><span>Jump · press again to DOUBLE JUMP</span></div>
+      <div class="key-row"><kbd>SHIFT</kbd><span>Dash (brief i-frames)</span></div>
+      <div class="key-row"><kbd>TAB</kbd><span>Map</span></div>
+      <div class="key-row"><kbd>ESC</kbd><span>Pause</span></div>
+    </div>
+    <p class="ov-note dim">Aliases: J / K / L and 1–4 also fire abilities. R also heals.</p>
+    <div class="ov-actions"><button class="primary-btn" id="btnControlsClose">CLOSE</button></div>
+  </div>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section id="settings" class="overlay">
+  <div class="ov-card">
+    <div class="ov-kanji">設</div>
+    <h2>SETTINGS</h2>
+    <div class="set-row">
+      <label>Mouse sensitivity</label>
+      <input type="range" id="setSens" min="0.4" max="3" step="0.05" value="1">
+      <span id="setSensV">1.00</span>
+    </div>
+    <div class="set-row">
+      <label>Render quality</label>
+      <input type="range" id="setQual" min="0.35" max="1" step="0.05" value="0.62">
+      <span id="setQualV">62%</span>
+    </div>
+    <div class="set-row">
+      <label>Volume</label>
+      <input type="range" id="setVol" min="0" max="1" step="0.05" value="0.55">
+      <span id="setVolV">55%</span>
+    </div>
+    <div class="set-row">
+      <label class="toggle"><input type="checkbox" id="setInvert"> <span>Invert vertical look</span></label>
+    </div>
+    <div class="ov-actions"><button class="primary-btn" id="btnSettingsClose">CLOSE</button></div>
+  </div>
+</section>
+
+<!-- ============ SCRIPTS ============ -->
+<!-- Classic scripts, deliberately: ES modules are CORS-blocked over file://,
+     so this ordering is what lets the game open by double-click. -->
+<script>try { localStorage.setItem('jjk_perspective', '3d'); } catch (e) {}</script>
+<script src="js/engine/core.js"></script>
+
+<script src="js/data/sprites.js"></script>
+<script src="js/data/characters.js"></script>
+<script src="js/data/bosses.js"></script>
+<script src="js/data/levels.js"></script>
+<script src="js/data/domains.js"></script>
+<script src="js/data/boons.js"></script>
+<script src="js/data/modifiers.js"></script>
+
+<script src="js/engine/assets.js"></script>
+<script src="js/engine/map.js"></script>
+<script src="js/engine/textures.js"></script>
+<script src="js/engine/spritebake.js"></script>
+<script src="js/engine/raycaster.js"></script>
+<script src="js/engine/renderer.js"></script>
+<script src="js/engine/postfx.js"></script>
+<script src="js/engine/viewmodel.js"></script>
+<script src="js/engine/input.js"></script>
+<script src="js/engine/audio.js"></script>
+
+<script src="js/game/art.js"></script>
+<script src="js/game/particles.js"></script>
+<script src="js/game/combat.js"></script>
+<script src="js/game/projectiles.js"></script>
+<script src="js/game/entities.js"></script>
+<script src="js/game/abilities.js"></script>
+<script src="js/game/boss.js"></script>
+<script src="js/game/player.js"></script>
+<script src="js/game/waves.js"></script>
+<script src="js/game/hud.js"></script>
+<script src="js/game/game.js"></script>
+
+<script src="js/ui/menu.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

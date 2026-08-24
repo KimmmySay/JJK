@@ -19,7 +19,7 @@
     #gameBackground {
       position: fixed;
       inset: 0;
-      background-image: url('sky.jpeg');
+      background-image: url('../sky.jpeg');
       background-size: cover;
       background-position: center;
       z-index: 0;
@@ -964,6 +964,38 @@
       color: white;
       font-size: 0.9rem;
     }
+    /* Perspective switch — links to the unified launcher and the 3D build */
+    .persp-nav {
+      position: absolute;
+      top: 20px; left: 20px; right: 20px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 5;
+    }
+    .persp-nav a {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .persp-nav a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    .persp-nav a.to3d {
+      border-color: rgba(168, 85, 247, 0.7);
+      color: #d8b4fe;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+    }
+    .persp-nav a.to3d:hover {
+      background: rgba(168, 85, 247, 0.25);
+      box-shadow: 0 0 24px rgba(168, 85, 247, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -974,6 +1006,10 @@
 
   <!-- Mode Select Screen -->
   <div id="modeSelect">
+    <nav class="persp-nav">
+      <a href="../index.html">← 2D / 3D SELECT</a>
+      <a class="to3d" href="../fps/index.html">SWITCH TO 3D · FIRST PERSON →</a>
+    </nav>
     <h1>呪術廻戦</h1>
     <div class="subtitle">JUJUTSU KAISEN - CURSED BATTLE</div>
 
@@ -1024,161 +1060,161 @@
 
     <div class="character-grid">
       <div class="character-card gojo" data-char="gojo" onclick="selectCharacter('gojo')">
-        <div class="char-icon"><img src="Avatar/Gojo.png" alt="Gojo"></div>
+        <div class="char-icon"><img src="../Avatar/Gojo.png" alt="Gojo"></div>
         <div class="char-name">SATORU GOJO</div>
         <div class="char-role">ZONE CONTROL / BURST MAGE</div>
         <div class="char-desc">The Strongest. Limitless + Six Eyes. Infinity makes you untouchable.</div>
       </div>
 
       <div class="character-card yuji" data-char="yuji" onclick="selectCharacter('yuji')">
-        <div class="char-icon"><img src="Avatar/Yuji.png" alt="Yuji"></div>
+        <div class="char-icon"><img src="../Avatar/Yuji.png" alt="Yuji"></div>
         <div class="char-name">YUJI ITADORI</div>
         <div class="char-role">BRAWLER / TANK</div>
         <div class="char-desc">Vessel of Sukuna. Soul Dismantle + Blood Manipulation. High crit chance.</div>
       </div>
 
       <div class="character-card sukuna" data-char="sukuna" onclick="selectCharacter('sukuna')">
-        <div class="char-icon"><img src="Avatar/Sukuna.png" alt="Sukuna"></div>
+        <div class="char-icon"><img src="../Avatar/Sukuna.png" alt="Sukuna"></div>
         <div class="char-name">RYOMEN SUKUNA</div>
         <div class="char-role">BOSS / DPS</div>
         <div class="char-desc">King of Curses. Shrine techniques. Malevolent Shrine destroys ALL.</div>
       </div>
 
       <div class="character-card megumi" data-char="megumi" onclick="selectCharacter('megumi')">
-        <div class="char-icon"><img src="Avatar/Megumi.gif" alt="Megumi"></div>
+        <div class="char-icon"><img src="../Avatar/Megumi.gif" alt="Megumi"></div>
         <div class="char-name">MEGUMI FUSHIGURO</div>
         <div class="char-role">SUMMONER / TACTICIAN</div>
         <div class="char-desc">Ten Shadows. Summon Shikigami to fight. Ultimate: MAHORAGA.</div>
       </div>
 
       <div class="character-card yuta" data-char="yuta" onclick="selectCharacter('yuta')">
-        <div class="char-icon"><img src="Avatar/Yuta.png" alt="Yuta"></div>
+        <div class="char-icon"><img src="../Avatar/Yuta.png" alt="Yuta"></div>
         <div class="char-name">YUTA OKKOTSU</div>
         <div class="char-role">COPYCAT / MANA BATTERY</div>
         <div class="char-desc">Rika fights with you. Copy enemy abilities. Massive cursed energy.</div>
       </div>
 
       <div class="character-card hakari" data-char="hakari" onclick="selectCharacter('hakari')">
-        <div class="char-icon"><img src="Avatar/Hakari.gif" alt="Hakari"></div>
+        <div class="char-icon"><img src="../Avatar/Hakari.gif" alt="Hakari"></div>
         <div class="char-name">KINJI HAKARI</div>
         <div class="char-role">GAMBLER / SUSTAIN TANK</div>
         <div class="char-desc">RNG God. Hit Jackpot = IMMORTAL for 4:11. Infinite cursed energy.</div>
       </div>
 
       <div class="character-card maki" data-char="maki" onclick="selectCharacter('maki')">
-        <div class="char-icon"><img src="Avatar/Maki.webp" alt="Maki"></div>
+        <div class="char-icon"><img src="../Avatar/Maki.webp" alt="Maki"></div>
         <div class="char-name">MAKI ZENIN</div>
         <div class="char-role">ASSASSIN / ANTI-MAGE</div>
         <div class="char-desc">Heavenly Restriction. IMMUNE to domains. Pure physical devastation.</div>
       </div>
 
       <div class="character-card mahoraga" data-char="mahoraga" onclick="selectCharacter('mahoraga')">
-        <div class="char-icon"><img src="Avatar/Mahoraga.gif" alt="Mahoraga"></div>
+        <div class="char-icon"><img src="../Avatar/Mahoraga.gif" alt="Mahoraga"></div>
         <div class="char-name">MAHORAGA</div>
         <div class="char-role">DIVINE GENERAL / BERSERKER</div>
         <div class="char-desc">Eight-Handled Sword. ADAPTS to all attacks. Unstoppable force.</div>
       </div>
 
       <div class="character-card todo" data-char="todo" onclick="selectCharacter('todo')">
-        <div class="char-icon"><img src="Avatar/Todo.png" alt="Todo"></div>
+        <div class="char-icon"><img src="../Avatar/Todo.png" alt="Todo"></div>
         <div class="char-name">AOI TODO</div>
         <div class="char-role">BRAWLER / TRICKSTER</div>
         <div class="char-desc">Boogie Woogie master. Swaps positions with enemies. BROTHER!</div>
       </div>
 
       <div class="character-card choso" data-char="choso" onclick="selectCharacter('choso')">
-        <div class="char-icon"><img src="Avatar/Choso.jpg" alt="Choso"></div>
+        <div class="char-icon"><img src="../Avatar/Choso.jpg" alt="Choso"></div>
         <div class="char-name">CHOSO</div>
         <div class="char-role">BLOOD DEMON / BROTHER</div>
         <div class="char-desc">Blood Manipulation. Piercing Blood snipes enemies. Passive regen.</div>
       </div>
 
       <div class="character-card nobara" data-char="nobara" onclick="selectCharacter('nobara')">
-        <div class="char-icon"><img src="Avatar/Nobara.webp" alt="Nobara"></div>
+        <div class="char-icon"><img src="../Avatar/Nobara.webp" alt="Nobara"></div>
         <div class="char-name">NOBARA KUGISAKI</div>
         <div class="char-role">STRAW DOLL / BURST</div>
         <div class="char-desc">Hairpin nails + Resonance. Link enemies to share damage!</div>
       </div>
 
       <div class="character-card inumaki" data-char="inumaki" onclick="selectCharacter('inumaki')">
-        <div class="char-icon"><img src="Avatar/Toge.webp" alt="Inumaki"></div>
+        <div class="char-icon"><img src="../Avatar/Toge.webp" alt="Inumaki"></div>
         <div class="char-name">TOGE INUMAKI</div>
         <div class="char-role">CURSED SPEECH / CC</div>
         <div class="char-desc">Words are weapons. Stop, Explode, Die! Abilities hurt self.</div>
       </div>
 
       <div class="character-card nanami" data-char="nanami" onclick="selectCharacter('nanami')">
-        <div class="char-icon"><img src="Avatar/Nanami.webp" alt="Nanami"></div>
+        <div class="char-icon"><img src="../Avatar/Nanami.webp" alt="Nanami"></div>
         <div class="char-name">KENTO NANAMI</div>
         <div class="char-role">RATIO / PRECISION DPS</div>
         <div class="char-desc">7:3 ratio technique. Overtime mode = massive power boost!</div>
       </div>
 
       <div class="character-card mahito" data-char="mahito" onclick="selectCharacter('mahito')">
-        <div class="char-icon"><img src="Avatar/Mahito.jpg" alt="Mahito"></div>
+        <div class="char-icon"><img src="../Avatar/Mahito.jpg" alt="Mahito"></div>
         <div class="char-name">MAHITO</div>
         <div class="char-role">SOUL / CHAOS</div>
         <div class="char-desc">Idle Transfiguration. Morph enemies, spawn clones, shapeshift!</div>
       </div>
 
       <div class="character-card kashimo" data-char="kashimo" onclick="selectCharacter('kashimo')">
-        <div class="char-icon"><img src="Avatar/Kashimo.webp" alt="Kashimo"></div>
+        <div class="char-icon"><img src="../Avatar/Kashimo.webp" alt="Kashimo"></div>
         <div class="char-name">HAJIME KASHIMO</div>
         <div class="char-role">LIGHTNING / GLASS CANNON</div>
         <div class="char-desc">400 years of waiting. Lightning fast attacks. Mythical Beast form!</div>
       </div>
 
       <div class="character-card higuruma" data-char="higuruma" onclick="selectCharacter('higuruma')">
-        <div class="char-icon"><img src="Avatar/Higurama.webp" alt="Higuruma"></div>
+        <div class="char-icon"><img src="../Avatar/Higurama.webp" alt="Higuruma"></div>
         <div class="char-name">HIROMI HIGURUMA</div>
         <div class="char-role">LAWYER / DEBUFF</div>
         <div class="char-desc">Judgeman shikigami. Domain confiscates cursed techniques!</div>
       </div>
 
       <div class="character-card ryu" data-char="ryu" onclick="selectCharacter('ryu')">
-        <div class="char-icon"><img src="Avatar/Ryu.webp" alt="Ryu"></div>
+        <div class="char-icon"><img src="../Avatar/Ryu.webp" alt="Ryu"></div>
         <div class="char-name">RYU ISHIGORI</div>
         <div class="char-role">GRANITE / PURE POWER</div>
         <div class="char-desc">Highest cursed energy output. Charge shots for massive damage!</div>
       </div>
 
       <div class="character-card jogo" data-char="jogo" onclick="selectCharacter('jogo')">
-        <div class="char-icon"><img src="Avatar/Jogo.webp" alt="Jogo"></div>
+        <div class="char-icon"><img src="../Avatar/Jogo.webp" alt="Jogo"></div>
         <div class="char-name">JOGO</div>
         <div class="char-role">VOLCANO / AOE FIRE</div>
         <div class="char-desc">Disaster curse. Ember insects, lava geysers, meteors! Fire domain.</div>
       </div>
 
       <div class="character-card hanami" data-char="hanami" onclick="selectCharacter('hanami')">
-        <div class="char-icon"><img src="Avatar/Hanami.webp" alt="Hanami"></div>
+        <div class="char-icon"><img src="../Avatar/Hanami.webp" alt="Hanami"></div>
         <div class="char-name">HANAMI</div>
         <div class="char-role">NATURE / SUSTAIN TANK</div>
         <div class="char-desc">Forest curse. Drain enemies, heal self. Tanky nature spirit!</div>
       </div>
 
       <div class="character-card toji" data-char="toji" onclick="selectCharacter('toji')">
-        <div class="char-icon"><img src="Avatar/Toji.webp" alt="Toji"></div>
+        <div class="char-icon"><img src="../Avatar/Toji.webp" alt="Toji"></div>
         <div class="char-name">TOJI FUSHIGURO</div>
         <div class="char-role">ASSASSIN / ANTI-MAGE</div>
         <div class="char-desc">Heavenly Restriction. Fastest character. IMMUNE to domains!</div>
       </div>
 
       <div class="character-card geto" data-char="geto" onclick="selectCharacter('geto')">
-        <div class="char-icon"><img src="Avatar/Geto.jpg" alt="Geto"></div>
+        <div class="char-icon"><img src="../Avatar/Geto.jpg" alt="Geto"></div>
         <div class="char-name">SUGURU GETO</div>
         <div class="char-role">CURSE MASTER / SUMMONER</div>
         <div class="char-desc">Curse Manipulation. Absorb and release curses. Uzumaki deletes!</div>
       </div>
 
       <div class="character-card gojofull" data-char="gojofull" onclick="selectCharacter('gojofull')">
-        <div class="char-icon"><img src="Avatar/GojoFULL.webp" alt="Full Power Gojo"></div>
+        <div class="char-icon"><img src="../Avatar/GojoFULL.webp" alt="Full Power Gojo"></div>
         <div class="char-name">FULL POWER GOJO</div>
         <div class="char-role">THE STRONGEST / NO LIMITS</div>
         <div class="char-desc">Shinjuku Showdown. 200% Purple. 4x Black Flash combo. THE HONORED ONE.</div>
       </div>
 
       <div class="character-card meguna" data-char="meguna" onclick="selectCharacter('meguna')">
-        <div class="char-icon"><img src="Avatar/Meguna.webp" alt="Meguna"></div>
+        <div class="char-icon"><img src="../Avatar/Meguna.webp" alt="Meguna"></div>
         <div class="char-name">MEGUNA</div>
         <div class="char-role">KING OF CURSES / SHADOW</div>
         <div class="char-desc">Sukuna in Megumi's body. Ten Shadows + Malevolent Shrine. Summons Mahoraga!</div>
@@ -1356,6 +1392,7 @@
   </div>
 
   <!-- Load character data from separate file -->
+  <script>try { localStorage.setItem('jjk_perspective', '2d'); } catch (e) {}</script>
   <script src="characters.js?v=3"></script>
   <script src="bosses.js?v=3"></script>
 
@@ -1562,29 +1599,29 @@
 
     // Character image mapping for battle mode
     const characterImages = {
-      gojo: 'Avatar/Gojo.png',
-      yuji: 'Avatar/Yuji.png',
-      sukuna: 'Avatar/Sukuna.png',
-      megumi: 'Avatar/Megumi.gif',
-      yuta: 'Avatar/Yuta.png',
-      hakari: 'Avatar/Hakari.gif',
-      maki: 'Avatar/Maki.webp',
-      mahoraga: 'Avatar/Mahoraga.gif',
-      todo: 'Avatar/Todo.png',
-      choso: 'Avatar/Choso.webp',
-      nobara: 'Avatar/Nobara.webp',
-      inumaki: 'Avatar/Toge.webp',
-      nanami: 'Avatar/Nanami.webp',
-      mahito: 'Avatar/Mahito.webp',
-      kashimo: 'Avatar/Kashimo.webp',
-      higuruma: 'Avatar/Higurama.webp',
-      ryu: 'Avatar/Ryu.webp',
-      jogo: 'Avatar/Jogo.webp',
-      hanami: 'Avatar/Hanami.webp',
-      toji: 'Avatar/Toji.webp',
-      geto: 'Avatar/Geto.webp',
-      gojofull: 'Avatar/GojoFULL.webp',
-      meguna: 'Avatar/Meguna.webp'
+      gojo: '../Avatar/Gojo.png',
+      yuji: '../Avatar/Yuji.png',
+      sukuna: '../Avatar/Sukuna.png',
+      megumi: '../Avatar/Megumi.gif',
+      yuta: '../Avatar/Yuta.png',
+      hakari: '../Avatar/Hakari.gif',
+      maki: '../Avatar/Maki.webp',
+      mahoraga: '../Avatar/Mahoraga.gif',
+      todo: '../Avatar/Todo.png',
+      choso: '../Avatar/Choso.webp',
+      nobara: '../Avatar/Nobara.webp',
+      inumaki: '../Avatar/Toge.webp',
+      nanami: '../Avatar/Nanami.webp',
+      mahito: '../Avatar/Mahito.webp',
+      kashimo: '../Avatar/Kashimo.webp',
+      higuruma: '../Avatar/Higurama.webp',
+      ryu: '../Avatar/Ryu.webp',
+      jogo: '../Avatar/Jogo.webp',
+      hanami: '../Avatar/Hanami.webp',
+      toji: '../Avatar/Toji.webp',
+      geto: '../Avatar/Geto.webp',
+      gojofull: '../Avatar/GojoFULL.webp',
+      meguna: '../Avatar/Meguna.webp'
     };
 
     function goToBattleSetup() {
@@ -1628,7 +1665,7 @@
 
         if (selectedOpponents[i]) {
           const char = CHARACTERS[selectedOpponents[i]];
-          const imgSrc = characterImages[selectedOpponents[i]] || 'Avatar/Gojo.png';
+          const imgSrc = characterImages[selectedOpponents[i]] || '../Avatar/Gojo.png';
           slot.style.setProperty('--char-color', char.color);
           slot.innerHTML = `
             <div class="slot-icon"><img src="${imgSrc}" alt="${char.name}"></div>
@@ -1663,7 +1700,7 @@
         const char = CHARACTERS[charId];
         if (!char) return;
 
-        const imgSrc = characterImages[charId] || 'Avatar/Gojo.png';
+        const imgSrc = characterImages[charId] || '../Avatar/Gojo.png';
 
         const card = document.createElement('div');
         card.className = `character-card ${charId}`;
@@ -2296,41 +2333,41 @@
     }
 
     // Load available sprites - all characters!
-    loadSprite('gojo', 'Avatar/Gojo.png');
-    loadSprite('yuji', 'Avatar/Yuji.png');
-    loadSprite('sukuna', 'Avatar/Sukuna.png');
-    loadSprite('megumi', 'Avatar/Megumi.gif');
-    loadSprite('yuta', 'Avatar/Yuta.png');
-    loadSprite('hakari', 'Avatar/Hakari.gif');
-    loadSprite('maki', 'Avatar/Maki.webp');
-    loadSprite('mahoraga', 'Avatar/Mahoraga.gif');
-    loadSprite('todo', 'Avatar/Todo.png');
-    loadSprite('choso', 'Avatar/Choso.jpg');
+    loadSprite('gojo', '../Avatar/Gojo.png');
+    loadSprite('yuji', '../Avatar/Yuji.png');
+    loadSprite('sukuna', '../Avatar/Sukuna.png');
+    loadSprite('megumi', '../Avatar/Megumi.gif');
+    loadSprite('yuta', '../Avatar/Yuta.png');
+    loadSprite('hakari', '../Avatar/Hakari.gif');
+    loadSprite('maki', '../Avatar/Maki.webp');
+    loadSprite('mahoraga', '../Avatar/Mahoraga.gif');
+    loadSprite('todo', '../Avatar/Todo.png');
+    loadSprite('choso', '../Avatar/Choso.jpg');
 
     // New characters
-    loadSprite('nobara', 'Avatar/Nobara.webp');
-    loadSprite('inumaki', 'Avatar/Toge.webp');
-    loadSprite('nanami', 'Avatar/Nanami.webp');
-    loadSprite('mahito', 'Avatar/Mahito.jpg');
-    loadSprite('kashimo', 'Avatar/Kashimo.webp');
-    loadSprite('higuruma', 'Avatar/Higurama.webp');
-    loadSprite('ryu', 'Avatar/Ryu.webp');
-    loadSprite('jogo', 'Avatar/Jogo.webp');
-    loadSprite('hanami', 'Avatar/Hanami.webp');
-    loadSprite('toji', 'Avatar/Toji.webp');
-    loadSprite('geto', 'Avatar/Geto.jpg');
-    loadSprite('gojofull', 'Avatar/GojoFULL.webp');
-    loadSprite('meguna', 'Avatar/Meguna.webp');
+    loadSprite('nobara', '../Avatar/Nobara.webp');
+    loadSprite('inumaki', '../Avatar/Toge.webp');
+    loadSprite('nanami', '../Avatar/Nanami.webp');
+    loadSprite('mahito', '../Avatar/Mahito.jpg');
+    loadSprite('kashimo', '../Avatar/Kashimo.webp');
+    loadSprite('higuruma', '../Avatar/Higurama.webp');
+    loadSprite('ryu', '../Avatar/Ryu.webp');
+    loadSprite('jogo', '../Avatar/Jogo.webp');
+    loadSprite('hanami', '../Avatar/Hanami.webp');
+    loadSprite('toji', '../Avatar/Toji.webp');
+    loadSprite('geto', '../Avatar/Geto.jpg');
+    loadSprite('gojofull', '../Avatar/GojoFULL.webp');
+    loadSprite('meguna', '../Avatar/Meguna.webp');
 
     // Load shikigami sprites
-    loadSprite('divineDog', 'Avatar/MegumiDog.gif');
-    loadSprite('nue', 'Avatar/MegumiBird.gif');
-    loadSprite('chimera', 'Avatar/Chimera.avif');
-    loadSprite('megunaMahoraga', 'Avatar/MegunaMahoraga.webp');
+    loadSprite('divineDog', '../Avatar/MegumiDog.gif');
+    loadSprite('nue', '../Avatar/MegumiBird.gif');
+    loadSprite('chimera', '../Avatar/Chimera.avif');
+    loadSprite('megunaMahoraga', '../Avatar/MegunaMahoraga.webp');
 
     // Load weapon/effect sprites
-    loadSprite('makiSpear', 'Avatar/MakiSpear.png');
-    loadSprite('clawSlash', 'Avatar/Claw.png');
+    loadSprite('makiSpear', '../Avatar/MakiSpear.png');
+    loadSprite('clawSlash', '../Avatar/Claw.png');
 
     // ============ GAME STATE ============
     let selectedCharacter = null;
@@ -2406,29 +2443,29 @@
     // ============ CHARACTER SELECTION ============
     // Sprite paths for each character
     const spritePaths = {
-      gojo: 'Avatar/Gojo.png',
-      yuji: 'Avatar/Yuji.png',
-      sukuna: 'Avatar/Sukuna.png',
-      megumi: 'Avatar/Megumi.gif',
-      yuta: 'Avatar/Yuta.png',
-      hakari: 'Avatar/Hakari.gif',
-      maki: 'Avatar/Maki.webp',
-      mahoraga: 'Avatar/Mahoraga.gif',
-      todo: 'Avatar/Todo.png',
-      choso: 'Avatar/Choso.jpg',
-      nobara: 'Avatar/Nobara.png',
-      inumaki: 'Avatar/Inumaki.png',
-      nanami: 'Avatar/Nanami.png',
-      mahito: 'Avatar/Mahito.png',
-      kashimo: 'Avatar/Kashimo.png',
-      higuruma: 'Avatar/Higuruma.png',
-      ryu: 'Avatar/Ryu.png',
-      jogo: 'Avatar/Jogo.png',
-      hanami: 'Avatar/Hanami.png',
-      toji: 'Avatar/Toji.png',
-      geto: 'Avatar/Geto.png',
-      gojofull: 'Avatar/GojoFull.png',
-      meguna: 'Avatar/Meguna.png'
+      gojo: '../Avatar/Gojo.png',
+      yuji: '../Avatar/Yuji.png',
+      sukuna: '../Avatar/Sukuna.png',
+      megumi: '../Avatar/Megumi.gif',
+      yuta: '../Avatar/Yuta.png',
+      hakari: '../Avatar/Hakari.gif',
+      maki: '../Avatar/Maki.webp',
+      mahoraga: '../Avatar/Mahoraga.gif',
+      todo: '../Avatar/Todo.png',
+      choso: '../Avatar/Choso.jpg',
+      nobara: '../Avatar/Nobara.png',
+      inumaki: '../Avatar/Inumaki.png',
+      nanami: '../Avatar/Nanami.png',
+      mahito: '../Avatar/Mahito.png',
+      kashimo: '../Avatar/Kashimo.png',
+      higuruma: '../Avatar/Higuruma.png',
+      ryu: '../Avatar/Ryu.png',
+      jogo: '../Avatar/Jogo.png',
+      hanami: '../Avatar/Hanami.png',
+      toji: '../Avatar/Toji.png',
+      geto: '../Avatar/Geto.png',
+      gojofull: '../Avatar/GojoFull.png',
+      meguna: '../Avatar/Meguna.png'
     };
 
     function selectCharacter(charId) {

@@ -1,71 +1,93 @@
-# JUJUTSU KAISEN - Cursed Battle
+# JUJUTSU KAISEN — Cursed Battle
 
-A browser-based action game inspired by Jujutsu Kaisen, built entirely with vanilla HTML5 Canvas and JavaScript. No frameworks, no build tools — just open and play.
+One game, two perspectives. **Open `index.html`** and choose:
+
+- **2D · TOP-DOWN** — the original arena game (`2d/`)
+- **3D · FIRST PERSON** — the raycasting build (`fps/`)
+
+Both share the same 23 sorcerers, 5 bosses and character art, and both run
+offline with no build step. Each title screen has a **‹ 2D / 3D SELECT** link
+back to the launcher and a **SWITCH TO 2D / 3D** link straight across, so you
+can hop between perspectives without leaving the browser. The launcher
+remembers your last pick (`localStorage` key `jjk_perspective`) and takes
+keyboard input: `1` / `2`, or arrows + `Enter`.
+
+```
+Game/
+├── index.html              ← START HERE: pick 2D or 3D
+│
+├── 2d/                     Top-down arena game
+│   ├── jjk-game.html         (launched by index.html; also opens standalone)
+│   ├── characters.js         23 characters
+│   ├── bosses.js             5 bosses
+│   └── README.md             full details
+│
+├── fps/                    First-person game, custom raycasting engine
+│   ├── index.html            (launched by ../index.html; also opens standalone)
+│   ├── js/  css/             engine, data, game, UI
+│   ├── tools/                test harness + sprite preview
+│   └── README.md             full details
+│
+├── prototypes/             Experiments
+│   └── bewilder-prototype.html   "Reality Shift" — interactive art piece
+│
+├── Avatar/                 Shared character art (29 images)
+└── sky.jpeg                Shared sky texture
+```
+
+`Avatar/` and `sky.jpeg` live at the top level because **both games use them**.
+Neither game copies the art; they reference it as `../Avatar/…`.
 
 ---
 
-## Game Modes
+## The two perspectives
 
-**Story Mode** — Start as Yuji Itadori and unlock characters and abilities as you fight through escalating waves of cursed spirits.
+They are two independent code bases behind one front door. The launcher
+navigates to whichever you pick — nothing is loaded in an iframe, so pointer
+lock, fullscreen and saves behave exactly as they did standalone. Each build
+stamps `jjk_perspective` on load, so the launcher's "LAST PLAYED" badge stays
+right however you arrived. Progress is per perspective: the 2D game saves
+under `jjk_story_progress`, the FPS under its own key; they do not share
+unlocks.
 
-**Endless Mode** — All 20+ characters unlocked from the start. Survive infinite waves and chase a high score.
+### `2d/` — Cursed Battle *(top-down)*
 
-**Battle Mode** — PvP-style combat against AI-controlled sorcerers. Set up 1v1 through 1v4 matchups, pick your opponents or randomize them.
+The original. Top-down arena combat on HTML5 canvas, one 8,000-line file.
+23 characters with four abilities each, bosses every 5 waves, Story / Endless /
+Battle modes.
 
-## Characters
+**Play:** `index.html` → **2D**, or open `2d/jjk-game.html` directly
 
-The roster includes 20+ playable sorcerers and cursed spirits, each with four unique abilities (J/K/L/Q), individual stats (HP, speed, Black Flash chance), and signature passives:
+### `fps/` — Cursed Domain *(first person)*
 
-Gojo, Yuji, Sukuna, Megumi, Yuta, Hakari, Maki, Mahoraga, Todo, Choso, Nobara, Inumaki, Nanami, Mahito, Kashimo, Higuruma, Ryu, Jogo, Hanami, Toji, Geto — plus special forms like Full Power Gojo and Meguna (Sukuna in Megumi's body).
+A separate build on a raycasting engine written from scratch — no Three.js,
+no WebGL, no dependencies. Same roster and bosses, rebuilt for first person:
+8-angle enemy sprites, climbable arenas with double jump, 43 in-run boons,
+boss phases, wave modifiers, 11 domain expansions that repaint the arena.
 
-Characters fall into distinct playstyles — mana-based casters, physical brawlers with zero cursed energy, summoners, glass cannons, and tanks.
-
-## Combat Mechanics
-
-- **Abilities** — Four per character mapped to J, K, L, and Q (domain expansion). Each has mana costs and cooldowns.
-- **Black Flash** — A critical hit system with per-character probability. Yuji has the highest base chance at 15%.
-- **Bone Crush** — Physical-only characters like Maki and Toji replace Black Flash with devastating Bone Crush hits.
-- **RCT (Reverse Cursed Technique)** — Healing ability available to select characters via the R key.
-- **Passives** — Character-specific mechanics activated with SPACE or triggered automatically (Infinity, Shikigami, Adaptation, Jackpot, etc.).
-- **Domain Expansions** — Ultimate abilities costing 50 mana with long cooldowns.
-
-## Boss Fights
-
-Every 5 waves, a Special Grade cursed spirit appears: Jogo, Hanami, Mahito, Dagon, or the Finger Bearer. Bosses have unique attack patterns (projectiles, beams, AOE, summons, debuffs) and scale in health, damage, and speed with each cycle.
-
-## Controls
-
-| Key | Action |
-|-----|--------|
-| WASD / Arrow Keys | Move |
-| J | Ability 1 |
-| K | Ability 2 |
-| L | Ability 3 |
-| Q | Domain Expansion |
-| R | RCT Heal |
-| H | Black Flash |
-| SPACE | Character passive |
-
-## How to Play
-
-Open `jjk-game.html` in any modern browser. No installation or server needed.
-
-## Files
-
-```
-jjk-game.html            Main game (HTML5 Canvas)
-characters.js             Character database (stats, abilities, passives)
-bosses.js                 Boss database (attacks, scaling, spawn order)
-sky.jpeg                  Night sky background
-Avatar/                   Character portrait images
-bewilder-prototype.html   Reality Shift — interactive art experiment
-bewilder-prototype.jsx    React version of Reality Shift
-```
-
-## Bonus: Reality Shift
-
-An experimental interactive art piece included in the repo. Click anywhere to distort reality — the experience evolves through phases with glitch effects, gravity inversion, floating geometry, hidden secrets, and a portal that opens if you look hard enough.
+**Play:** `index.html` → **3D**, or open `fps/index.html` directly
+**Inspect the art:** open `fps/tools/sprite-preview.html`
+**Run the tests:** `cd fps && node tools/headless-test.js`
 
 ---
 
-*Built with HTML5 Canvas, vanilla JS, and zero dependencies.*
+## Note on the shared art
+
+`Avatar/` has some filenames worth knowing about before you edit paths:
+
+- `Higurama.webp` — misspelled on disk (should be *Higuruma*)
+- `GojoFULL.webp` — upper-case `FULL`
+- `Toge.webp` — Inumaki is filed under his given name
+- Mixed formats: `.png` `.webp` `.jpg` `.gif` `.avif`
+
+The 2D game assumes `.png` for most of the roster, so **13 of its 23 portraits
+point at files that do not exist** and render as broken images. That has been
+left exactly as it was — moving the folder did not change it. The FPS build
+carries a corrected, verified path list in `fps/js/data/sprites.js`.
+
+If you want the 2D game's portraits fixed, that's a small change to its two
+sprite maps — just ask.
+
+---
+
+*Characters and techniques are from* Jujutsu Kaisen *by Gege Akutami.*

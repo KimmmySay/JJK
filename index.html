@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JUJUTSU KAISEN — Cursed Battle</title>
+<style>
+/* ==========================================================================
+   LAUNCHER — one front door for both builds.
+   Pick a perspective; the matching game loads. No network, no build step.
+   Palette and type match fps/css/main.css so the hand-off feels seamless.
+   ========================================================================== */
+:root {
+  --bg: #05040a;
+  --panel: rgba(12, 10, 20, 0.86);
+  --line: rgba(150, 130, 220, 0.22);
+  --line-hot: rgba(190, 120, 255, 0.75);
+  --ink: #ece9f5;
+  --dim: rgba(236, 233, 245, 0.55);
+  --dimmer: rgba(236, 233, 245, 0.3);
+  --accent: #a855f7;
+  --accent2: #ff2d78;
+  --cyan: #4fe3ff;
+  --sans: "Rajdhani", "Chakra Petch", "Eurostile", "Bahnschrift",
+          system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+  --jp: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(90, 40, 150, 0.30), transparent 60%),
+    radial-gradient(900px 600px at 90% 110%, rgba(190, 30, 90, 0.18), transparent 60%),
+    var(--bg);
+  overflow-x: hidden;
+}
+/* Scan texture, same as the in-game menus. */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.014) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+
+.wrap {
+  margin: auto;
+  width: 100%; max-width: 1040px;
+  padding: 56px 24px 40px;
+  text-align: center;
+  position: relative; z-index: 1;
+}
+
+.kanji {
+  font-family: var(--jp); font-size: 22px; letter-spacing: 0.7em;
+  color: rgba(255, 45, 120, 0.75); margin-bottom: 10px;
+  padding-left: 0.7em; /* optically centre the tracked glyphs */
+}
+h1 {
+  font-size: clamp(44px, 8vw, 92px);
+  font-weight: 700; letter-spacing: 0.09em; line-height: 0.95;
+}
+h1 span {
+  display: block;
+  background: linear-gradient(100deg, var(--accent) 0%, var(--accent2) 55%, #ff8a3d 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 26px rgba(168, 85, 247, 0.45));
+}
+.tag {
+  margin-top: 14px; font-size: 13px; letter-spacing: 0.24em;
+  color: var(--dim); text-transform: uppercase;
+}
+.tag b { color: var(--ink); font-weight: 600; }
+
+/* ---------- perspective cards ---------- */
+.persp-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 440px));
+  gap: 22px; margin: 44px auto 0; justify-content: center;
+}
+@media (max-width: 760px) { .persp-grid { grid-template-columns: 1fr; } }
+
+.persp {
+  position: relative;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px 18px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+.persp:hover, .persp:focus-visible, .persp.hot {
+  border-color: var(--line-hot);
+  background: rgba(30, 16, 50, 0.9);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(120, 40, 200, 0.28);
+}
+.persp[data-p="2d"]:hover, .persp[data-p="2d"].hot { --glow: var(--cyan); }
+.persp[data-p="3d"]:hover, .persp[data-p="3d"].hot { --glow: var(--accent); }
+
+.preview {
+  display: block;
+  width: 100%; height: 170px;
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.p-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-top: 4px; }
+.p-kanji { font-family: var(--jp); font-size: 24px; color: var(--accent); letter-spacing: 0.16em; white-space: nowrap; }
+.persp[data-p="2d"] .p-kanji { color: var(--cyan); }
+.p-name { font-size: 20px; font-weight: 700; letter-spacing: 0.16em; white-space: nowrap; }
+.p-sub { margin-left: auto; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.16em; color: var(--dimmer); text-transform: uppercase; white-space: nowrap; }
+.p-desc { font-size: 12.5px; line-height: 1.55; color: var(--dim); }
+
+.p-keys { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+kbd {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+  padding: 3px 7px; color: var(--dim);
+  border: 1px solid var(--line); border-radius: 2px;
+  background: rgba(255,255,255,0.03);
+}
+.p-keys span { font-size: 10.5px; color: var(--dimmer); letter-spacing: 0.1em; align-self: center; margin-right: 4px; }
+
+.p-cta {
+  margin-top: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.24em;
+  color: var(--ink);
+}
+.p-cta i { font-style: normal; color: var(--glow, var(--accent)); transition: transform 0.18s ease; }
+.persp:hover .p-cta i, .persp.hot .p-cta i { transform: translateX(4px); }
+.p-num {
+  font-family: var(--mono); font-size: 10.5px; color: var(--dimmer);
+  border: 1px solid var(--line); padding: 2px 7px; margin-right: 10px;
+}
+
+.badge {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.2em;
+  color: #0a0410; background: linear-gradient(135deg, var(--accent), var(--accent2));
+  padding: 4px 8px;
+  display: none;
+}
+.persp.last .badge { display: block; }
+
+.foot {
+  margin-top: 34px;
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+}
+.hint { font-size: 11px; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; }
+.hint kbd { color: var(--ink); }
+.note { font-size: 10.5px; color: var(--dimmer); letter-spacing: 0.12em; font-family: var(--mono); }
+.note a { color: var(--dim); text-decoration: none; border-bottom: 1px dotted var(--line-hot); }
+.note a:hover { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .persp, .p-cta i { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <div class="kanji">呪術廻戦</div>
+  <h1>JUJUTSU<span>KAISEN</span></h1>
+  <p class="tag">Cursed Battle · <b>choose your perspective</b></p>
+
+  <div class="persp-grid" id="grid">
+
+    <!-- ============ 2D ============ -->
+    <a class="persp" data-p="2d" href="2d/jjk-game.html" id="card2d">
+      <span class="badge">LAST PLAYED</span>
+      <canvas class="preview" id="pv2d" width="400" height="170" aria-hidden="true"></canvas>
+      <div class="p-head">
+        <span class="p-kanji">俯瞰</span>
+        <span class="p-name">2D · TOP-DOWN</span>
+        <span class="p-sub">Cursed Battle</span>
+      </div>
+      <p class="p-desc">
+        Arena combat seen from above. Kite curses across the floor, chain the
+        four-key kit, bosses every five waves. Story · Endless · Battle.
+      </p>
+      <div class="p-keys">
+        <span>KEYS</span><kbd>WASD</kbd><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd><kbd>Q</kbd><kbd>SPACE</kbd>
+      </div>
+      <div class="p-cta"><span><span class="p-num">1</span>PLAY 2D</span><i>›</i></div>
+    </a>
+
+    <!-- ============ 3D ============ -->
+    <a class="persp" data-p="3d" href="fps/index.html" id="card3d">
+      <span class="badge">LAST PLAYED</span>
+      <canvas class="preview" id="pv3d" width="400" height="170" aria-hidden="true"></canvas>
+      <div class="p-head">
+        <span class="p-kanji">一人称</span>
+        <span class="p-name">3D · FIRST PERSON</span>
+        <span class="p-sub">Cursed Domain</span>
+      </div>
+      <p class="p-desc">
+        Through the sorcerer's eyes. Raycast arenas you can climb, double jump,
+        43 in-run boons, boss phases, 11 domain expansions that repaint the map.
+      </p>
+      <div class="p-keys">
+        <span>KEYS</span><kbd>WASD</kbd><kbd>MOUSE</kbd><kbd>Q</kbd><kbd>E</kbd><kbd>C</kbd><kbd>X</kbd><kbd>SHIFT</kbd>
+      </div>
+      <div class="p-cta"><span><span class="p-num">2</span>PLAY 3D</span><i>›</i></div>
+    </a>
+
+  </div>
+
+  <div class="foot">
+    <div class="hint"><kbd>1</kbd> / <kbd>2</kbd> to choose &nbsp;·&nbsp; <kbd>←</kbd> <kbd>→</kbd> + <kbd>ENTER</kbd></div>
+    <div class="note">
+      Same 23 sorcerers · same 5 bosses · same portraits · runs offline ·
+      <a href="prototypes/bewilder-prototype.html">Reality Shift (art piece)</a>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var KEY = 'jjk_perspective';
+  var cards = { '2d': document.getElementById('card2d'), '3d': document.getElementById('card3d') };
+  var order = ['2d', '3d'];
+
+  /* ------------------------------------------------------------------
+     Remember the last pick. localStorage can throw (private mode,
+     blocked storage) — the page must work without it.
+     ------------------------------------------------------------------ */
+  var last = null;
+  try { last = localStorage.getItem(KEY); } catch (e) { /* no storage */ }
+  if (cards[last]) cards[last].classList.add('last');
+
+  function launch(p) {
+    try { localStorage.setItem(KEY, p); } catch (e) { /* no storage */ }
+    // Let the browser follow the href (also honours cmd/ctrl-click).
+  }
+  order.forEach(function (p) {
+    cards[p].addEventListener('click', function () { launch(p); });
+  });
+
+  /* ------------------------------------------------------------------
+     Keyboard: 1 / 2 launch directly; arrows move focus; Enter follows.
+     ------------------------------------------------------------------ */
+  var hot = cards[last] ? order.indexOf(last) : 0;
+  function setHot(i) {
+    hot = (i + order.length) % order.length;
+    order.forEach(function (p, k) { cards[p].classList.toggle('hot', k === hot); });
+    cards[order[hot]].focus({ preventScroll: true });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === '1') { launch('2d'); cards['2d'].click(); }
+    else if (e.key === '2') { launch('3d'); cards['3d'].click(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setHot(hot - 1); }
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'Tab' && !e.shiftKey && document.activeElement === document.body) { e.preventDefault(); setHot(hot + 1); }
+    else if (e.key === 'Enter' && document.activeElement && document.activeElement.classList.contains('persp')) {
+      launch(document.activeElement.dataset.p); // anchor handles navigation
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     Live previews. Two tiny renderers so the choice is visual, not verbal:
+       2D  — top-down arena: player disc, orbiting curses, strikes.
+       3D  — a 60-line raycaster: corridor, moving wall bands, a curse
+             billboard closing in, crosshair. Same idea as the real engine.
+     ------------------------------------------------------------------ */
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  var c2 = document.getElementById('pv2d'), g2 = c2.getContext('2d');
+  var c3 = document.getElementById('pv3d'), g3 = c3.getContext('2d');
+  var W = c2.width, H = c2.height;
+
+  // Deterministic pseudo-random so the previews look the same every open.
+  var seed = 7;
+  function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+
+  // ---- 2D: top-down ----
+  var foes = [];
+  for (var i = 0; i < 7; i++) {
+    foes.push({ a: rnd() * Math.PI * 2, r: 45 + rnd() * 45, s: (0.35 + rnd() * 0.5) * (rnd() < 0.5 ? 1 : -1), w: rnd() * 6 });
+  }
+  var bolts = [];
+  function draw2d(t) {
+    g2.clearRect(0, 0, W, H);
+    // floor
+    var grd = g2.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, W * 0.6);
+    grd.addColorStop(0, '#1a0f2e'); grd.addColorStop(1, '#06040c');
+    g2.fillStyle = grd; g2.fillRect(0, 0, W, H);
+    g2.strokeStyle = 'rgba(120,100,200,0.10)'; g2.lineWidth = 1;
+    for (var x = 0; x <= W; x += 25) { g2.beginPath(); g2.moveTo(x, 0); g2.lineTo(x, H); g2.stroke(); }
+    for (var y = 0; y <= H; y += 25) { g2.beginPath(); g2.moveTo(0, y); g2.lineTo(W, y); g2.stroke(); }
+
+    var px = W / 2, py = H / 2;
+    // foes orbit and breathe inward
+    var nearest = null, nd = 1e9;
+    foes.forEach(function (f) {
+      f.a += f.s * 0.016;
+      var rr = f.r + Math.sin(t * 0.0015 + f.w) * 14;
+      f.x = px + Math.cos(f.a) * rr * 1.6; f.y = py + Math.sin(f.a) * rr;
+      var d = Math.hypot(f.x - px, f.y - py);
+      if (d < nd) { nd = d; nearest = f; }
+    });
+    // occasional strike toward the nearest foe
+    if (nearest && (t % 900) < 16 && bolts.length < 3) bolts.push({ x: px, y: py, tx: nearest.x, ty: nearest.y, k: 0 });
+    bolts.forEach(function (b) { b.k += 0.06; });
+    for (var j = bolts.length - 1; j >= 0; j--) if (bolts[j].k >= 1) bolts.splice(j, 1);
+
+    // foes
+    foes.forEach(function (f) {
+      g2.beginPath(); g2.arc(f.x, f.y, 6, 0, Math.PI * 2);
+      g2.fillStyle = '#ff2d5a'; g2.shadowColor = '#ff2d5a'; g2.shadowBlur = 12; g2.fill(); g2.shadowBlur = 0;
+      g2.fillStyle = '#ffd0da'; g2.fillRect(f.x - 2.5, f.y - 1.5, 2, 2); g2.fillRect(f.x + 0.5, f.y - 1.5, 2, 2);
+    });
+    // bolts
+    bolts.forEach(function (b) {
+      var bx = b.x + (b.tx - b.x) * b.k, by = b.y + (b.ty - b.y) * b.k;
+      g2.strokeStyle = 'rgba(79,227,255,' + (1 - b.k) + ')'; g2.lineWidth = 2;
+      g2.beginPath(); g2.moveTo(b.x + (b.tx - b.x) * Math.max(0, b.k - 0.25), b.y + (b.ty - b.y) * Math.max(0, b.k - 0.25)); g2.lineTo(bx, by); g2.stroke();
+    });
+    // player
+    var fa = nearest ? Math.atan2(nearest.y - py, nearest.x - px) : 0;
+    g2.beginPath(); g2.arc(px, py, 20, fa - 0.5, fa + 0.5); g2.strokeStyle = 'rgba(79,227,255,0.35)'; g2.lineWidth = 3; g2.stroke();
+    g2.beginPath(); g2.arc(px, py, 9, 0, Math.PI * 2);
+    g2.fillStyle = '#a855f7'; g2.shadowColor = '#a855f7'; g2.shadowBlur = 18; g2.fill(); g2.shadowBlur = 0;
+    g2.strokeStyle = '#ece9f5'; g2.lineWidth = 2; g2.beginPath(); g2.moveTo(px, py); g2.lineTo(px + Math.cos(fa) * 14, py + Math.sin(fa) * 14); g2.stroke();
+    // HUD hint
+    g2.fillStyle = 'rgba(236,233,245,0.35)'; g2.font = '10px ' + getComputedStyle(document.body).fontFamily;
+    g2.fillText('WAVE 12', 10, 16); g2.fillText('KILLS 87', 10, 30);
+    g2.fillStyle = 'rgba(80,255,200,0.9)'; g2.fillRect(10, H - 16, 90, 4);
+    g2.fillStyle = 'rgba(79,227,255,0.9)'; g2.fillRect(10, H - 9, 60, 3);
+  }
+
+  // ---- 3D: first person raycaster ----
+  var cols = 200, colW = W / cols, FOV = 0.9, HALF = 1.0, TRAVEL = 0;
+  var foe3 = { z: 9, x: 0.15 };
+  function shade(v, d, tint) {
+    var f = Math.max(0, 1 - d / 12);
+    var r = Math.round((tint ? 170 : 40) * v * f + 8 * (1 - f));
+    var g = Math.round((tint ? 60 : 24) * v * f + 4 * (1 - f));
+    var b = Math.round((tint ? 220 : 70) * v * f + 14 * (1 - f));
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+  function draw3d(t) {
+    TRAVEL += 0.03;
+    // ceiling + floor
+    var sky = g3.createLinearGradient(0, 0, 0, H / 2); sky.addColorStop(0, '#0a0614'); sky.addColorStop(1, '#03020a');
+    g3.fillStyle = sky; g3.fillRect(0, 0, W, H / 2);
+    var fl = g3.createLinearGradient(0, H / 2, 0, H); fl.addColorStop(0, '#06040c'); fl.addColorStop(1, '#1b1030');
+    g3.fillStyle = fl; g3.fillRect(0, H / 2, W, H / 2);
+    // floor lines rushing in
+    g3.strokeStyle = 'rgba(168,85,247,0.12)';
+    for (var k = 0; k < 8; k++) {
+      var z = ((k - (TRAVEL % 1)) + 1) * 1.2 + 0.4; var yy = H / 2 + (H * 0.5) / z;
+      g3.beginPath(); g3.moveTo(0, yy); g3.lineTo(W, yy); g3.stroke();
+    }
+    // end wall bobs closer then resets (a corridor you keep walking down)
+    var endZ = 14 - (TRAVEL * 1.5) % 10;
+    var bob = Math.sin(t * 0.008) * 2.5;
+    for (var i = 0; i < cols; i++) {
+      var cam = (i / cols - 0.5) * 2 * FOV;      // ray x-slope
+      var sideD = cam === 0 ? 1e9 : HALF / Math.abs(cam);
+      var d = Math.min(sideD, endZ);
+      var isEnd = d === endZ;
+      var h = (H * 0.9) / d;
+      // band texture along z so motion reads
+      var hitZ = isEnd ? (i / cols) * 6 : d + TRAVEL * 1.5;
+      var band = (Math.floor(hitZ * 1.5) % 2) === 0 ? 1 : 0.72;
+      var side = isEnd ? 0.55 : 1;
+      g3.fillStyle = shade(band * side, d, isEnd);
+      g3.fillRect(i * colW, H / 2 - h / 2 + bob, colW + 0.6, h);
+    }
+    // enemy billboard walking toward the camera
+    foe3.z -= 0.02; if (foe3.z < 1.6) { foe3.z = 10; foe3.x = (rnd() - 0.5) * 0.7; }
+    var sc = (H * 0.75) / foe3.z, ex = W / 2 + (foe3.x / foe3.z) * W * 0.9 + Math.sin(t * 0.004) * sc * 0.06, ey = H / 2 + bob + sc * 0.28;
+    var fog = Math.max(0.15, 1 - foe3.z / 12);
+    g3.save(); g3.globalAlpha = fog;
+    g3.fillStyle = '#1a0a12';
+    g3.beginPath(); g3.ellipse(ex, ey, sc * 0.28, sc * 0.5, 0, 0, Math.PI * 2); g3.fill();
+    g3.beginPath(); g3.arc(ex, ey - sc * 0.42, sc * 0.2, 0, Math.PI * 2); g3.fill();
+    g3.fillStyle = '#ff2d5a'; g3.shadowColor = '#ff2d5a'; g3.shadowBlur = sc * 0.2;
+    g3.fillRect(ex - sc * 0.11, ey - sc * 0.46, sc * 0.07, sc * 0.05); g3.fillRect(ex + sc * 0.04, ey - sc * 0.46, sc * 0.07, sc * 0.05);
+    g3.shadowBlur = 0; g3.restore();
+    // vignette + crosshair + HUD
+    var vg = g3.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, W * 0.6);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+    g3.fillStyle = vg; g3.fillRect(0, 0, W, H);
+    g3.strokeStyle = 'rgba(236,233,245,0.8)'; g3.lineWidth = 1.5;
+    g3.beginPath(); g3.moveTo(W / 2 - 8, H / 2); g3.lineTo(W / 2 - 3, H / 2); g3.moveTo(W / 2 + 3, H / 2); g3.lineTo(W / 2 + 8, H / 2);
+    g3.moveTo(W / 2, H / 2 - 8); g3.lineTo(W / 2, H / 2 - 3); g3.moveTo(W / 2, H / 2 + 3); g3.lineTo(W / 2, H / 2 + 8); g3.stroke();
+    g3.fillStyle = 'rgba(80,255,200,0.9)'; g3.fillRect(10, H - 16, 90, 4);
+    g3.fillStyle = 'rgba(168,85,247,0.9)'; g3.fillRect(10, H - 9, 60, 3);
+    g3.fillStyle = 'rgba(236,233,245,0.35)'; g3.font = '10px ' + getComputedStyle(document.body).fontFamily;
+    g3.fillText('WAVE 12', 10, 16); g3.fillText('BOON ×4', 10, 30);
+  }
+
+  function frame(t) {
+    draw2d(t); draw3d(t);
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

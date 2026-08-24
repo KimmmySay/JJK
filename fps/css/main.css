@@ -1,0 +1,137 @@
+/* ==========================================================================
+   MAIN — reset, canvas, shared primitives.
+   System font stacks only, so nothing depends on a network fetch.
+   ========================================================================== */
+
+:root {
+  --bg: #05040a;
+  --panel: rgba(12, 10, 20, 0.86);
+  --panel-solid: #0b0912;
+  --line: rgba(150, 130, 220, 0.22);
+  --line-hot: rgba(190, 120, 255, 0.75);
+  --ink: #ece9f5;
+  --dim: rgba(236, 233, 245, 0.55);
+  --dimmer: rgba(236, 233, 245, 0.3);
+  --accent: #a855f7;
+  --accent2: #ff2d78;
+  --good: #50ffc8;
+  --warn: #ffcc44;
+  --bad: #ff4d5e;
+  --sans: "Rajdhani", "Chakra Petch", "Eurostile", "Bahnschrift",
+          system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+  --jp: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  background: #000;
+  cursor: none;
+}
+body.menu-open #game { cursor: default; }
+
+/* ---------- pointer-lock prompt ---------- */
+.lock-prompt {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(3, 2, 8, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 40;
+  cursor: pointer;
+}
+.lock-prompt.hidden { display: none; }
+.lock-inner { text-align: center; animation: breathe 2.4s ease-in-out infinite; }
+.lock-icon { font-size: 54px; color: var(--accent); text-shadow: 0 0 24px var(--accent); }
+.lock-text { font-size: 26px; letter-spacing: 0.28em; font-weight: 700; margin-top: 10px; }
+.lock-sub { font-size: 13px; color: var(--dim); letter-spacing: 0.16em; margin-top: 6px; }
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+/* ---------- buttons ---------- */
+.primary-btn {
+  font-family: var(--sans);
+  font-size: 17px; font-weight: 700; letter-spacing: 0.2em;
+  padding: 14px 30px;
+  color: #0a0410;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  border: none; border-radius: 2px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 0 0 rgba(168, 85, 247, 0);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(168, 85, 247, 0.5);
+  filter: brightness(1.12);
+}
+.primary-btn:active:not(:disabled) { transform: translateY(0); }
+.primary-btn:disabled { opacity: 0.32; cursor: not-allowed; filter: grayscale(0.7); }
+
+.ghost-btn {
+  font-family: var(--sans);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.18em;
+  padding: 11px 20px;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.ghost-btn:hover { color: var(--ink); border-color: var(--line-hot); background: rgba(168, 85, 247, 0.09); }
+.ghost-btn.danger:hover { color: var(--bad); border-color: rgba(255, 77, 94, 0.6); background: rgba(255, 77, 94, 0.08); }
+
+.back-btn {
+  font-family: var(--sans);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.16em;
+  color: var(--dim); background: none; border: none; cursor: pointer;
+  padding: 8px 4px;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.back-btn:hover { color: var(--ink); transform: translateX(-3px); }
+
+/* ---------- form bits ---------- */
+.toggle { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 13px; color: var(--dim); }
+.toggle input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+.toggle:hover { color: var(--ink); }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 3px; background: var(--line); border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.7);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 15px; height: 15px; border: none; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+}
+
+/* ---------- scrollbars ---------- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); }
+::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.35); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.6); }

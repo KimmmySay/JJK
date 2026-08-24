@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sprite Preview — Cursed Domain</title>
+<style>
+  :root { --line: rgba(150,130,220,.22); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#07060d; color:#ece9f5; padding:26px 30px 60px;
+    font-family:"Rajdhani","Chakra Petch",system-ui,sans-serif;
+  }
+  h1 { font-size:20px; letter-spacing:.3em; font-weight:700; }
+  .sub { font-size:12px; color:#8d88a8; margin:6px 0 24px; letter-spacing:.08em; }
+  h2 {
+    font-size:12px; letter-spacing:.24em; color:#a855f7;
+    margin:30px 0 4px; padding-bottom:6px; border-bottom:1px solid var(--line);
+  }
+  .note { font-size:11px; color:#7d789a; margin:6px 0 14px; line-height:1.6; }
+  .row { display:flex; flex-wrap:wrap; gap:14px; margin-top:14px; }
+  .cell {
+    background:#0d0b16; border:1px solid var(--line); padding:8px;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .cell canvas { image-rendering:auto; background:
+    repeating-conic-gradient(#15121f 0 25%, #100e18 0 50%) 0 0/16px 16px; }
+  .label { font-size:10px; letter-spacing:.1em; color:#a49ec4; }
+  .dim { font-size:9px; color:#6b6688; font-family:monospace; }
+  .strip { overflow-x:auto; max-width:100%; border:1px solid var(--line); background:#0d0b16; padding:8px; }
+  #err { color:#ff6b7d; font-family:monospace; font-size:12px; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<h1>SPRITE PREVIEW</h1>
+<div class="sub">
+  Every sheet the game bakes at load time. Animated sheets play live at 10fps.
+  Open this file directly — same offline rules as the game.
+</div>
+<div id="err"></div>
+<div id="out"></div>
+
+<script src="../js/engine/core.js"></script>
+<script src="../js/data/sprites.js"></script>
+<script src="../js/data/characters.js"></script>
+<script src="../js/data/bosses.js"></script>
+<script src="../js/data/levels.js"></script>
+<script src="../js/data/domains.js"></script>
+<script src="../js/engine/assets.js"></script>
+<script src="../js/engine/map.js"></script>
+<script src="../js/engine/textures.js"></script>
+<script src="../js/engine/spritebake.js"></script>
+<script src="../js/game/art.js"></script>
+<script>
+/* The preview lives in tools/, so Avatar/ is one level further up than the
+   game expects. Rewrite the manifest before Art.build() reads it. */
+(function () {
+  const S = window.JJK.SPRITES;
+  const fix = (o) => { for (const k of Object.keys(o)) o[k] = '../' + o[k]; };
+  fix(S.PORTRAITS); fix(S.BOSS_PORTRAITS); fix(S.PROPS);
+  S.SKY = '../' + S.SKY;
+})();
+
+const out = document.getElementById('out');
+const players = [];
+
+function section(title, note) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+  if (note) { const n = document.createElement('div'); n.className = 'note'; n.textContent = note; out.appendChild(n); }
+  const r = document.createElement('div'); r.className = 'row'; out.appendChild(r);
+  return r;
+}
+
+/** One animated cell cycling through a sheet's frames. */
+function cell(row, sheet, label, scale) {
+  const wrap = document.createElement('div'); wrap.className = 'cell';
+  const c = document.createElement('canvas');
+  const s = scale || 1;
+  c.width = sheet.fw * s; c.height = sheet.fh * s;
+  const ctx = c.getContext('2d');
+  wrap.appendChild(c);
+  const l = document.createElement('div'); l.className = 'label'; l.textContent = label;
+  const d = document.createElement('div'); d.className = 'dim';
+  d.textContent = `${sheet.fw}x${sheet.fh} · ${sheet.frames}f`;
+  wrap.appendChild(l); wrap.appendChild(d);
+  row.appendChild(wrap);
+  players.push(() => {
+    const f = sheet.frames > 1 ? Math.floor(Date.now() / 100) % sheet.frames : 0;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.drawImage(sheet.canvas, f * sheet.fw, 0, sheet.fw, sheet.fh, 0, 0, c.width, c.height);
+  });
+}
+
+/** Every yaw view of a creature, animating its idle cycle. */
+function angleRow(row, sheet, label) {
+  const poses = sheet.poses || 1;
+  const names = ['front','front-R','right','back-R','back','back-L','left','front-L'];
+  for (let a = 0; a < (sheet.angles || 1); a++) {
+    const wrap = document.createElement('div'); wrap.className = 'cell';
+    const c = document.createElement('canvas');
+    c.width = sheet.fw * 1.15; c.height = sheet.fh * 1.15;
+    const ctx = c.getContext('2d');
+    wrap.appendChild(c);
+    const l = document.createElement('div'); l.className = 'label';
+    l.textContent = names[a] || ('yaw ' + a);
+    wrap.appendChild(l);
+    row.appendChild(wrap);
+    const seq = [0, 1, 2, 3, 2, 1];
+    players.push(() => {
+      const p = seq[Math.floor(Date.now() / 110) % seq.length] % poses;
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.drawImage(sheet.canvas, (a * poses + p) * sheet.fw, 0, sheet.fw, sheet.fh,
+        0, 0, c.width, c.height);
+    });
+  }
+  void label;
+}
+
+/** Full frame strip, laid out flat so you can inspect the whole cycle. */
+function strip(sheet, label) {
+  const h = document.createElement('div'); h.className = 'label';
+  h.textContent = label + ' — full cycle (idle 0-5 · windup 6-8 · strike 9-11)';
+  h.style.margin = '14px 0 6px';
+  out.appendChild(h);
+  const box = document.createElement('div'); box.className = 'strip';
+  const c = document.createElement('canvas');
+  c.width = sheet.canvas.width; c.height = sheet.canvas.height;
+  c.getContext('2d').drawImage(sheet.canvas, 0, 0);
+  box.appendChild(c); out.appendChild(box);
+}
+
+(async () => {
+  try {
+    const JJK = window.JJK;
+    await JJK.Art.build(() => {});
+
+    let r = section('SHIKIGAMI',
+      'Megumi\'s Ten Shadows. Authored silhouettes with real animation cycles — the source art is composited inside the shadow volume as texture rather than being the whole sprite.');
+    for (const k of ['divineDog', 'divineDogWhite', 'nue', 'mahoraga', 'chimera']) {
+      if (JJK.Art.props[k]) cell(r, JJK.Art.props[k], k, 1.6);
+    }
+    strip(JJK.Art.props.divineDog, 'Divine Dog');
+    strip(JJK.Art.props.nue, 'Nue');
+
+    r = section('CURSE SPIRITS', 'One row per tier. Irregular bodies from a seeded radial noise walk.');
+    for (const tier of Object.keys(JJK.Art.curses)) {
+      JJK.Art.curses[tier].forEach((sh, i) => cell(r, sh, `${tier} ${i}`, 1.1));
+    }
+
+    for (const tier of ['weak', 'strong', 'special']) {
+      const sh = JJK.Art.curses[tier] && JJK.Art.curses[tier][0];
+      if (!sh) continue;
+      const ar = section(`YAW VIEWS — ${tier}`,
+        'All 8 baked angles. Watch the body foreshorten side-on, the face slide off past 90 degrees, and the spine ridge take over from behind.');
+      angleRow(ar, sh, tier);
+    }
+
+    r = section('BOSSES', 'Portraits where art exists; Dagon and the Finger Bearer are fully procedural.');
+    for (const id of Object.keys(JJK.Art.bosses)) cell(r, JJK.Art.bosses[id], id, 1.0);
+
+    r = section('ROSTER', 'Portraits masked into feathered capsules with rim light and ground shadow — normalises png / webp / jpg into one look.');
+    for (const id of JJK.ROSTER_ORDER) if (JJK.Art.avatars[id]) cell(r, JJK.Art.avatars[id], id, 0.72);
+
+    r = section('WALL TEXTURES', 'Procedural, seeded, three variants per type so walls never look stamped.');
+    for (const lvl of JJK.LEVELS) {
+      for (const t of [1, 2, 3]) {
+        const tex = JJK.Textures.getWallTexture(lvl.theme, t, 0);
+        cell(r, { canvas: tex, fw: 128, fh: 128, frames: 1 }, `${lvl.id} ${lvl.theme.walls[t]}`, 0.85);
+      }
+    }
+
+    r = section('VOLUMETRIC TECHNIQUES',
+      'Spheres are the one shape a billboard renders correctly from every angle — the work is all in the shading: off-centre light, shadowed hemisphere, rotating latitude/longitude bands, fresnel rim, hot core.');
+    cell(r, JJK.SpriteBake.energySphere('#1e6fff', '#e8f6ff', 'implode'), 'Blue — attraction', 1.4);
+    cell(r, JJK.SpriteBake.energySphere('#00e5ff', '#ffffff', 'implode'), 'MAX Blue', 1.4);
+    cell(r, JJK.SpriteBake.energySphere('#ff2b2b', '#ffe6c8', 'explode'), 'Red — repulsion', 1.4);
+    cell(r, JJK.SpriteBake.energySphere('#ff3a1a', '#fff0c8', 'explode'), 'MAX Red', 1.4);
+    cell(r, JJK.SpriteBake.energySphere('#9932cc', '#ff66ff', 'void'), 'Hollow Purple', 1.4);
+
+    r = section('PROJECTILE SILHOUETTES',
+      'Every ranged technique used to be the same soft orb with a different tint. Each now has its own shape, drawn point-first with a trail.');
+    const PS = [
+      ['shard', '#ff2255', '#ffdddd'], ['blood', '#aa1122', '#ff6677'],
+      ['nail', '#ff69b4', '#ffffff'], ['bolt', '#00ced1', '#ffffff'],
+      ['ember', '#ff4500', '#ffcc44'], ['meteor', '#ff3300', '#ffee66'],
+      ['blast', '#c9772f', '#ffcc88'], ['wood', '#228b22', '#aaffaa'],
+      ['chain', '#8890a8', '#dde0ee'], ['curse', '#7c3aed', '#d8b4fe'],
+      ['ball', '#ffcc33', '#ffffff'], ['seal', '#9fc0c0', '#ffffff'],
+      ['nueBolt', '#66ccff', '#ffffff'],
+    ];
+    for (const [sh, col, core] of PS) {
+      cell(r, JJK.SpriteBake.projectileSprite(sh, col, core), sh, 1.1);
+    }
+
+    r = section('EFFECTS', null);
+    cell(r, JJK.SpriteBake.orb('#9932cc', '#ff66ff'), 'orb', 1);
+    cell(r, JJK.SpriteBake.bolt('#00ced1'), 'bolt', 1);
+    cell(r, JJK.SpriteBake.slash('#ff0044'), 'slash', 1);
+    cell(r, JJK.SpriteBake.ring('#ffaa00'), 'ring', 1);
+
+    (function loop() { for (const p of players) p(); requestAnimationFrame(loop); })();
+  } catch (e) {
+    document.getElementById('err').textContent = 'Preview failed:\n' + (e && e.stack || e);
+  }
+})();
+</script>
+</body>
+</html>
