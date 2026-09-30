@@ -6,8 +6,8 @@ A **first-person** cursed-combat game. 23 playable sorcerers, 5 Special Grade bo
 Built on a custom raycasting engine written from scratch — no Three.js, no WebGL, no
 CDN, no build step, no dependencies. Open `index.html` and play.
 
-> This is a separate build. The original top-down game in the parent folder
-> (`../jjk-game.html`) is untouched and still works exactly as before.
+> This is a separate build from the top-down game in `../2d/`. Both are
+> reachable from the launcher at `../index.html`.
 
 ---
 

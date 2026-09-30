@@ -1,93 +1,85 @@
 # JUJUTSU KAISEN — Cursed Battle
 
-One game, two perspectives. **Open `index.html`** and choose:
+A fan-made Jujutsu Kaisen action game you play in your browser. One game, two
+ways to play: a **2D top-down** arena brawler and a **3D first-person** version
+on a custom raycasting engine.
 
-- **2D · TOP-DOWN** — the original arena game (`2d/`)
-- **3D · FIRST PERSON** — the raycasting build (`fps/`)
+## ▶ [Play now](https://kimmmysay.github.io/JJK/)
 
-Both share the same 23 sorcerers, 5 bosses and character art, and both run
-offline with no build step. Each title screen has a **‹ 2D / 3D SELECT** link
-back to the launcher and a **SWITCH TO 2D / 3D** link straight across, so you
-can hop between perspectives without leaving the browser. The launcher
-remembers your last pick (`localStorage` key `jjk_perspective`) and takes
-keyboard input: `1` / `2`, or arrows + `Enter`.
+Nothing to install. Open the link, pick **2D** or **3D**, and fight.
+
+### Or download it and play offline
+
+1. Click the green **Code** button at the top of this page → **Download ZIP**
+2. Unzip it
+3. Double-click **`index.html`**
+
+No server, no installs, no internet needed after download. Works in any modern
+browser (Chrome, Edge, Firefox, Safari).
+
+---
+
+## What's in it
+
+- **23 playable sorcerers** — Gojo, Yuji, Sukuna, Megumi, Yuta, Hakari, Maki,
+  Toji, Nanami, Todo, Choso, Nobara, Inumaki, Mahito, Kashimo, Higuruma,
+  Geto and more, each with their own abilities and passive
+- **5 Special Grade bosses** — Jogo, Hanami, Mahito, Dagon and the Finger Bearer
+- **Domain Expansions**, Black Flash crits, Reverse Cursed Technique healing
+- **Three modes** in both versions:
+  - **Story** — start as Yuji and unlock the roster as you survive waves
+  - **Endless** — everyone unlocked, chase a high score
+  - **Battle** — 1v1 up to 1v4 against AI sorcerers
+
+The 3D version adds climbable arenas with double jump, 43 in-run upgrades
+("boons"), multi-phase bosses, wave modifiers and 11 Domain Expansions that
+repaint the whole arena.
+
+## Controls
+
+| | 2D · Top-down | 3D · First person |
+|---|---|---|
+| Move | WASD / arrows | WASD + mouse to look |
+| Attack | — | Left click |
+| Abilities | J · K · L | Q · E · C |
+| Domain Expansion | Q | X |
+| Heal (RCT) | R | F |
+| Passive | SPACE | Right click (or V) |
+| Jump / double jump | — | SPACE |
+| Dash | — | SHIFT |
+| Black Flash | H | rolls on left-click hits |
+| Pause | ESC | ESC |
+
+In 3D, click the screen to lock the mouse. On the launcher, press `1` / `2` or
+use the arrow keys + `Enter`. Each title screen has a link to switch between 2D
+and 3D.
+
+Progress saves in your browser. 2D and 3D keep separate saves.
+
+---
+
+## For developers
+
+Plain HTML + JavaScript. No frameworks, no build step, no dependencies.
 
 ```
-Game/
-├── index.html              ← START HERE: pick 2D or 3D
-│
-├── 2d/                     Top-down arena game
-│   ├── jjk-game.html         (launched by index.html; also opens standalone)
-│   ├── characters.js         23 characters
-│   ├── bosses.js             5 bosses
-│   └── README.md             full details
-│
-├── fps/                    First-person game, custom raycasting engine
-│   ├── index.html            (launched by ../index.html; also opens standalone)
-│   ├── js/  css/             engine, data, game, UI
-│   ├── tools/                test harness + sprite preview
-│   └── README.md             full details
-│
-├── prototypes/             Experiments
-│   └── bewilder-prototype.html   "Reality Shift" — interactive art piece
-│
-├── Avatar/                 Shared character art (29 images)
-└── sky.jpeg                Shared sky texture
+index.html          Launcher — pick 2D or 3D
+2d/                 Top-down game (HTML5 canvas)          → 2d/README.md
+fps/                First-person game, custom raycaster   → fps/README.md
+prototypes/         "Reality Shift" interactive art experiment
+Avatar/             Character art, shared by both games
+sky.jpeg            Sky texture, shared by both games
 ```
 
-`Avatar/` and `sky.jpeg` live at the top level because **both games use them**.
-Neither game copies the art; they reference it as `../Avatar/…`.
+- Run the FPS tests: `cd fps && node tools/headless-test.js`
+- Preview the FPS sprites: open `fps/tools/sprite-preview.html`
+
+**Known issue:** the 2D game points at `.png` files for most of the roster, but
+13 of its 23 portraits are other formats on disk (`.webp`, `.jpg`, …), so they
+show as broken images. The 3D build uses a corrected list in
+`fps/js/data/sprites.js`.
 
 ---
 
-## The two perspectives
-
-They are two independent code bases behind one front door. The launcher
-navigates to whichever you pick — nothing is loaded in an iframe, so pointer
-lock, fullscreen and saves behave exactly as they did standalone. Each build
-stamps `jjk_perspective` on load, so the launcher's "LAST PLAYED" badge stays
-right however you arrived. Progress is per perspective: the 2D game saves
-under `jjk_story_progress`, the FPS under its own key; they do not share
-unlocks.
-
-### `2d/` — Cursed Battle *(top-down)*
-
-The original. Top-down arena combat on HTML5 canvas, one 8,000-line file.
-23 characters with four abilities each, bosses every 5 waves, Story / Endless /
-Battle modes.
-
-**Play:** `index.html` → **2D**, or open `2d/jjk-game.html` directly
-
-### `fps/` — Cursed Domain *(first person)*
-
-A separate build on a raycasting engine written from scratch — no Three.js,
-no WebGL, no dependencies. Same roster and bosses, rebuilt for first person:
-8-angle enemy sprites, climbable arenas with double jump, 43 in-run boons,
-boss phases, wave modifiers, 11 domain expansions that repaint the arena.
-
-**Play:** `index.html` → **3D**, or open `fps/index.html` directly
-**Inspect the art:** open `fps/tools/sprite-preview.html`
-**Run the tests:** `cd fps && node tools/headless-test.js`
-
----
-
-## Note on the shared art
-
-`Avatar/` has some filenames worth knowing about before you edit paths:
-
-- `Higurama.webp` — misspelled on disk (should be *Higuruma*)
-- `GojoFULL.webp` — upper-case `FULL`
-- `Toge.webp` — Inumaki is filed under his given name
-- Mixed formats: `.png` `.webp` `.jpg` `.gif` `.avif`
-
-The 2D game assumes `.png` for most of the roster, so **13 of its 23 portraits
-point at files that do not exist** and render as broken images. That has been
-left exactly as it was — moving the folder did not change it. The FPS build
-carries a corrected, verified path list in `fps/js/data/sprites.js`.
-
-If you want the 2D game's portraits fixed, that's a small change to its two
-sprite maps — just ask.
-
----
-
-*Characters and techniques are from* Jujutsu Kaisen *by Gege Akutami.*
+*Fan project. Characters and techniques are from* Jujutsu Kaisen *by Gege
+Akutami.*

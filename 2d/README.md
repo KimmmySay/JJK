@@ -8,13 +8,13 @@ A browser-based action game inspired by Jujutsu Kaisen, built entirely with vani
 
 **Story Mode** — Start as Yuji Itadori and unlock characters and abilities as you fight through escalating waves of cursed spirits.
 
-**Endless Mode** — All 20+ characters unlocked from the start. Survive infinite waves and chase a high score.
+**Endless Mode** — All 23 characters unlocked from the start. Survive infinite waves and chase a high score.
 
 **Battle Mode** — PvP-style combat against AI-controlled sorcerers. Set up 1v1 through 1v4 matchups, pick your opponents or randomize them.
 
 ## Characters
 
-The roster includes 20+ playable sorcerers and cursed spirits, each with four unique abilities (J/K/L/Q), individual stats (HP, speed, Black Flash chance), and signature passives:
+The roster includes 23 playable sorcerers and cursed spirits, each with four unique abilities (J/K/L/Q), individual stats (HP, speed, Black Flash chance), and signature passives:
 
 Gojo, Yuji, Sukuna, Megumi, Yuta, Hakari, Maki, Mahoraga, Todo, Choso, Nobara, Inumaki, Nanami, Mahito, Kashimo, Higuruma, Ryu, Jogo, Hanami, Toji, Geto — plus special forms like Full Power Gojo and Meguna (Sukuna in Megumi's body).
 
